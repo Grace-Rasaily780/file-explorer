@@ -1,138 +1,138 @@
-use std::{
-    env::{self, args},
-    fs::read_dir,
-    io::{self, stdout},
-    path::{Path, PathBuf},
-};
+// use std::{
+//     env::{self, args},
+//     fs::read_dir,
+//     io::{self, stdout},
+//     path::{Path, PathBuf},
+// };
 
-use crossterm::{
-    event::{self, Event, KeyCode},
-    execute,
-    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
-};
+// use crossterm::{
+//     event::{self, Event, KeyCode},
+//     execute,
+//     terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
+// };
 
-use ratatui::{
-    Frame, Terminal,
-    backend::CrosstermBackend,
-    layout::{Constraint, Direction, Layout},
-    style::{Color, Modifier, Style},
-    widgets::{Block, Borders, List, ListItem, Paragraph},
-};
+// use ratatui::{
+//     Frame, Terminal,
+//     backend::CrosstermBackend,
+//     layout::{Constraint, Direction, Layout},
+//     style::{Color, Modifier, Style},
+//     widgets::{Block, Borders, List, ListItem, Paragraph},
+// };
 
-struct AppState {
-    current_index: usize,
-    items: Vec<String>,
-}
+// struct AppState {
+//     current_index: usize,
+//     items: Vec<String>,
+// }
 
-fn main() -> io::Result<()> {
-    enable_raw_mode()?;
-    let mut stdout = stdout();
-    execute!(stdout, EnterAlternateScreen)?;
+// fn main() -> io::Result<()> {
+//     enable_raw_mode()?;
+//     let mut stdout = stdout();
+//     execute!(stdout, EnterAlternateScreen)?;
 
-    let backend = CrosstermBackend::new(stdout);
-    let mut terminal = Terminal::new(backend)?;
+//     let backend = CrosstermBackend::new(stdout);
+//     let mut terminal = Terminal::new(backend)?;
 
-    let res = run_app(&mut terminal);
+//     let res = run_app(&mut terminal);
 
-    disable_raw_mode()?;
-    execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-    terminal.show_cursor()?;
+//     disable_raw_mode()?;
+//     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+//     terminal.show_cursor()?;
 
-    res
-    // Ok(())
-}
+//     res
+//     // Ok(())
+// }
 
-fn run_app<B: ratatui::backend::Backend>(terminal: &mut Terminal<B>) -> io::Result<()> {
-    let mut state = AppState {
-        current_index: 0,
-        items: vec![
-            "src/".to_string(),
-            "Cargo.toml".to_string(),
-            "README.md".to_string(),
-            "docs/".to_string(),
-        ],
-    };
+// fn run_app<B: ratatui::backend::Backend>(terminal: &mut Terminal<B>) -> io::Result<()> {
+//     let mut state = AppState {
+//         current_index: 0,
+//         items: vec![
+//             "src/".to_string(),
+//             "Cargo.toml".to_string(),
+//             "README.md".to_string(),
+//             "docs/".to_string(),
+//         ],
+//     };
 
-    loop {
-        // Draw the UI
-        terminal.draw(|f| ui(f, &state))?;
+//     loop {
+//         // Draw the UI
+//         terminal.draw(|f| ui(f, &state))?;
 
-        // Poll for keyboard events (blocking until an event occurs)
-        if let Event::Key(key) = event::read()? {
-            match key.code {
-                KeyCode::Char('q') => break, // Quit on 'q'
-                KeyCode::Down | KeyCode::Char('j') => {
-                    if state.current_index < state.items.len() - 1 {
-                        state.current_index += 1;
-                    }
-                }
-                KeyCode::Up | KeyCode::Char('k') => {
-                    if state.current_index > 0 {
-                        state.current_index -= 1;
-                    }
-                }
-                _ => {}
-            }
-        }
-    }
-    Ok(())
-}
+//         // Poll for keyboard events (blocking until an event occurs)
+//         if let Event::Key(key) = event::read()? {
+//             match key.code {
+//                 KeyCode::Char('q') => break, // Quit on 'q'
+//                 KeyCode::Down | KeyCode::Char('j') => {
+//                     if state.current_index < state.items.len() - 1 {
+//                         state.current_index += 1;
+//                     }
+//                 }
+//                 KeyCode::Up | KeyCode::Char('k') => {
+//                     if state.current_index > 0 {
+//                         state.current_index -= 1;
+//                     }
+//                 }
+//                 _ => {}
+//             }
+//         }
+//     }
+//     Ok(())
+// }
 
-fn ui(f: &mut Frame, state: &AppState) {
-    // Split screen vertically: Top for header, Middle for main view, Bottom for status bar
-    let chunks = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Length(3), // Header
-            Constraint::Min(1),    // Explorer Body
-            Constraint::Length(3), // Status Bar / Keyhints
-        ])
-        .split(f.size());
+// fn ui(f: &mut Frame, state: &AppState) {
+//     // Split screen vertically: Top for header, Middle for main view, Bottom for status bar
+//     let chunks = Layout::default()
+//         .direction(Direction::Vertical)
+//         .constraints([
+//             Constraint::Length(3), // Header
+//             Constraint::Min(1),    // Explorer Body
+//             Constraint::Length(3), // Status Bar / Keyhints
+//         ])
+//         .split(f.size());
 
-    // 1. Header Widget
-    let header = Paragraph::new(" Rust Filesystem Explorer — TUI Mode ")
-        .style(
-            Style::default()
-                .fg(Color::Cyan)
-                .add_modifier(Modifier::BOLD),
-        )
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .border_style(Style::default().fg(Color::DarkGray)),
-        );
-    f.render_widget(header, chunks[0]);
+//     // 1. Header Widget
+//     let header = Paragraph::new(" Rust Filesystem Explorer — TUI Mode ")
+//         .style(
+//             Style::default()
+//                 .fg(Color::Cyan)
+//                 .add_modifier(Modifier::BOLD),
+//         )
+//         .block(
+//             Block::default()
+//                 .borders(Borders::ALL)
+//                 .border_style(Style::default().fg(Color::DarkGray)),
+//         );
+//     f.render_widget(header, chunks[0]);
 
-    // 2. Main Explorer List
-    let list_items: Vec<ListItem> = state
-        .items
-        .iter()
-        .enumerate()
-        .map(|(i, item)| {
-            let style = if i == state.current_index {
-                Style::default()
-                    .fg(Color::Yellow)
-                    .add_modifier(Modifier::BOLD | Modifier::REVERSED)
-            } else {
-                Style::default().fg(Color::White)
-            };
-            ListItem::new(item.as_str()).style(style)
-        })
-        .collect();
+//     // 2. Main Explorer List
+//     let list_items: Vec<ListItem> = state
+//         .items
+//         .iter()
+//         .enumerate()
+//         .map(|(i, item)| {
+//             let style = if i == state.current_index {
+//                 Style::default()
+//                     .fg(Color::Yellow)
+//                     .add_modifier(Modifier::BOLD | Modifier::REVERSED)
+//             } else {
+//                 Style::default().fg(Color::White)
+//             };
+//             ListItem::new(item.as_str()).style(style)
+//         })
+//         .collect();
 
-    let file_list = List::new(list_items).block(
-        Block::default()
-            .title(" Directory Contents ")
-            .borders(Borders::ALL),
-    );
-    f.render_widget(file_list, chunks[1]);
+//     let file_list = List::new(list_items).block(
+//         Block::default()
+//             .title(" Directory Contents ")
+//             .borders(Borders::ALL),
+//     );
+//     f.render_widget(file_list, chunks[1]);
 
-    // 3. Status Bar Widget
-    let footer = Paragraph::new(" [j/k] Navigate | [Enter] Open | [q] Quit ")
-        .style(Style::default().fg(Color::Gray))
-        .block(Block::default().borders(Borders::ALL));
-    f.render_widget(footer, chunks[2]);
-}
+//     // 3. Status Bar Widget
+//     let footer = Paragraph::new(" [j/k] Navigate | [Enter] Open | [q] Quit ")
+//         .style(Style::default().fg(Color::Gray))
+//         .block(Block::default().borders(Borders::ALL));
+//     f.render_widget(footer, chunks[2]);
+// }
 
 // fn main() -> io::Result<()> {
 //     let args: Vec<String> = args().collect();
@@ -180,3 +180,50 @@ fn ui(f: &mut Frame, state: &AppState) {
 //     }
 //     Ok(())
 // }
+
+use gtk4::prelude::*;
+use gtk4::{Application, ApplicationWindow, Button};
+
+const APP_ID: &str = "com.rust_explorer.gui";
+
+fn main() {
+    // 1. Create a new GTK application
+    let app = Application::builder().application_id(APP_ID).build();
+
+    // 2. Connect the "activate" signal to build our UI window
+    app.connect_activate(build_ui);
+
+    // 3. Run the application (blocks until the window is closed)
+    app.run();
+}
+
+fn build_ui(app: &Application) {
+    // Create the main application window
+    let window = ApplicationWindow::builder()
+        .application(app)
+        .title("Rust Filesystem Explorer")
+        .default_width(800)
+        .default_height(600)
+        .build();
+
+    // Create a button widget
+    let button = Button::builder()
+        .label("Click to Explore Directory")
+        .margin_top(20)
+        .margin_bottom(20)
+        .margin_start(20)
+        .margin_end(20)
+        .build();
+
+    // Connect a callback to the button's clicked signal
+    button.connect_clicked(|btn| {
+        btn.set_label("Directory scanned!");
+        println!("Button clicked, scanning filesystem...");
+    });
+
+    // Place the button inside the window container
+    window.set_child(Some(&button));
+
+    // Present the window to the screen
+    window.present();
+}
